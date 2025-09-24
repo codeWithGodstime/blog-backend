@@ -31,3 +31,10 @@ STORAGES = {
 
 STATIC_URL = 'static/'
 MEDIA_URL = f"{BASE_DIR}/media/" 
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
