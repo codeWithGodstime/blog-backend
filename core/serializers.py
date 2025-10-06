@@ -16,6 +16,7 @@ class AuthenticationSerializer:
         class Meta:
             model = User
             fields = [
+                "username",
                 "email",
                 "password",
             ]

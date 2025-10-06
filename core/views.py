@@ -53,17 +53,16 @@ class AuthViewSet(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]
 
     @action(detail=False, methods=["post"])
-    @transaction.atomic()
+    @transaction.atomic
     def register(self, request):
         serializer = AuthenticationSerializer.RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        data = serializer.save()
+        user = serializer.save()  # save() should return the user instance
 
+        # Re-serialize to return proper response data
+        response_serializer = UserSerializer(user)
 
-        user = data["user"]
-        user.save()
-
-        return Response(data=user.data, status=status.HTTP_201_CREATED)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=["post"])
     def login(self, request):
