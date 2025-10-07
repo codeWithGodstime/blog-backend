@@ -68,20 +68,40 @@ class AuthViewSet(viewsets.ViewSet):
     def login(self, request):
         serializer = AuthenticationSerializer.LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = authenticate(
-            request,
-            email=serializer.validated_data["email"],
-            password=serializer.validated_data["password"],
-        )
-        if not user:
-            return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        email = serializer.validated_data["email"]
+        password = serializer.validated_data["password"]
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "Invalid email or password"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        if not user.check_password(password):
+            return Response(
+                {"detail": "Invalid email or password"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        if not user.is_active:
+            return Response(
+                {"detail": "User account is disabled"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
         refresh = RefreshToken.for_user(user)
         return Response(
             {
                 "refresh": str(refresh),
                 "access": str(refresh.access_token),
-                "user": {"id": user.id, "email": user.email, "role": user.role},
+                "user": {
+                    "id": user.id,
+                    "email": user.email,
+                    "role": getattr(user, "role", None),
+                },
             },
             status=status.HTTP_200_OK,
         )
