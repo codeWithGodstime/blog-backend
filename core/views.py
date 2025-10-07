@@ -70,7 +70,7 @@ class AuthViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         user = authenticate(
             request,
-            username=serializer.validated_data["email"],
+            email=serializer.validated_data["email"],
             password=serializer.validated_data["password"],
         )
         if not user:
