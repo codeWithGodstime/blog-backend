@@ -74,6 +74,7 @@ class AuthViewSet(viewsets.ViewSet):
 
         try:
             user = User.objects.get(email=email)
+            print("User check", user)
         except User.DoesNotExist:
             return Response(
                 {"detail": "Invalid email or password"},
