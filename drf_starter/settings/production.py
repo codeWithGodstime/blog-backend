@@ -6,15 +6,13 @@ import dj_database_url
 DEBUG = False
 ALLOWED_HOSTS = env("ALLOWED_HOSTS").split(",")
 
-DATABASES = {           
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env("DATABASE_NAME"),
-        'USER': env("DATABASE_USER"),
-        'PASSWORD': env("DATABASE_PASSWORD"),
-        'HOST': env("DATABASE_HOST"),
-        'PORT': env("DATABASE_PORT")
-    } 
+# Database
+DATABASES = {
+    "default": dj_database_url.parse(
+        env("DATABASE_URL"),
+        conn_max_age=600, 
+        ssl_require=True, 
+    )
 }
 
 # CORS
