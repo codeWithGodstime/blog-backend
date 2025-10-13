@@ -8,6 +8,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from rest_framework import viewsets, permissions, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_spectacular.utils import extend_schema
@@ -229,11 +230,22 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.save()
         return Response(serializer.data)
 
+
 @extend_schema(tags=["Art Images"])
 class ArtImageViewSet(viewsets.ModelViewSet):
+    """
+    Handles CRUD operations for user-uploaded art images.
+    Each user can only view and modify their own uploads.
+    """
     serializer_class = ArtImageSerializer
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
-        # Each user can only see their own images
-        return ArtImage.objects.filter(user=self.request.user)
+        # Return only images belonging to the authenticated user
+        user = self.request.user
+        return ArtImage.objects.filter(user=user).order_by("-uploaded_at")
+
+    def perform_create(self, serializer):
+        # Automatically associate the uploaded image with the logged-in user
+        serializer.save(user=self.request.user)
