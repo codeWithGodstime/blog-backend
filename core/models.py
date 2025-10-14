@@ -23,7 +23,9 @@ class ArtImage(models.Model):
     image = models.ImageField(upload_to="art_images/")
     uploaded_at = models.DateTimeField(auto_now_add=True)
     caption = models.CharField(max_length=255, blank=True)
+    title = models.CharField(max_length=255, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
+
 
     def __str__(self):
         return f"Image {self.id} by {self.user.username}"
