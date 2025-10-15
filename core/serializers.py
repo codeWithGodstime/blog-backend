@@ -126,7 +126,7 @@ class UserSerializer(serializers.ModelSerializer):
 class ArtImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArtImage
-        fields = ["id", "user", "image", "caption", "uploaded_at", "updated_at"]
+        fields = ["id", "user", "title", "image", "caption", "uploaded_at", "updated_at"]
         read_only_fields = ["id", "user", "uploaded_at", "updated_at"]
 
     def create(self, validated_data):
