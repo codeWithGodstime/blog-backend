@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from drf_starter.storage_backends import PublicMediaStorage
 
 from .manager import CustomUserManager
 
@@ -15,15 +16,15 @@ class User(AbstractUser):
     objects = CustomUserManager()
     email = models.EmailField(unique=True)
     bio = models.TextField(blank=True, null=True)
-    avatar = models.ImageField(upload_to=upload_to, blank=True, null=True)
+    avatar = models.ImageField(storage=PublicMediaStorage(), upload_to=upload_to, blank=True, null=True)
 
 
 class ArtImage(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="art_images")
-    image = models.ImageField(upload_to="art_images/")
+    image = models.ImageField(storage=PublicMediaStorage(), upload_to="art_images/")
     uploaded_at = models.DateTimeField(auto_now_add=True)
     caption = models.CharField(max_length=255, blank=True)
-    title = models.CharField(max_length=255, blank=True)
+    title = models.CharField(max_length=255, blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 
