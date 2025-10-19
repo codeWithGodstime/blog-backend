@@ -81,7 +81,6 @@ class TokenObtainSerializer(SimpleJWTTokenObtainPairSerializer):
 class BlogPostListSerializer(serializers.ModelSerializer):
     author_name = serializers.CharField(source="author.username", read_only=True)
     excerpt = serializers.SerializerMethodField()
-
     class Meta:
         model = BlogPost
         fields = [
@@ -124,12 +123,24 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ArtImageSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source="user.username", read_only=True)
+    bio = serializers.CharField(source="user.bio", read_only=True)
+
     class Meta:
         model = ArtImage
-        fields = ["id", "user", "title", "image", "caption", "uploaded_at", "updated_at"]
+        fields = [
+            "id",
+            "user",
+            "username",
+            "bio",
+            "title",
+            "image",
+            "caption",
+            "uploaded_at",
+            "updated_at",
+        ]
         read_only_fields = ["id", "user", "uploaded_at", "updated_at"]
 
     def create(self, validated_data):
-        # Ensure uploaded image is tied to the current user
         validated_data["user"] = self.context["request"].user
         return super().create(validated_data)
