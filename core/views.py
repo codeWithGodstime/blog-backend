@@ -215,7 +215,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return User.objects.filter(is_superuser=False)
 
-    
+
 
     @action(detail=False, methods=["get", "put"], permission_classes=[permissions.IsAuthenticated])
     def me(self, request):
@@ -229,7 +229,14 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
-
+    
+    @action(detail=True, methods=["get"], permission_classes=[permissions.IsAdminUser])
+    def my_artworks(self, request, pk=None):
+        """Get all art images uploaded by the user"""
+        user = self.get_object()
+        artworks = ArtImage.objects.filter(user=user)
+        serializer = ArtImageSerializer(artworks, many=True)
+        return Response(serializer.data)
 
 @extend_schema(tags=["Art Images"])
 class ArtImageViewSet(viewsets.ModelViewSet):
@@ -238,13 +245,11 @@ class ArtImageViewSet(viewsets.ModelViewSet):
     Each user can only view and modify their own uploads.
     """
     serializer_class = ArtImageSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
-        # Return only images belonging to the authenticated user
-        user = self.request.user
-        return ArtImage.objects.filter(user=user).order_by("-uploaded_at")
+        return ArtImage.objects.order_by("-uploaded_at")
 
     def perform_create(self, serializer):
         # Automatically associate the uploaded image with the logged-in user
