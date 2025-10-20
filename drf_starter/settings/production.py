@@ -30,7 +30,7 @@ AWS_S3_ENDPOINT_URL = env("S3_ENDPOINT_URL")
 
 STORAGES = {
     "default": {
-        "BACKEND": "storage_backends.PublicMediaStorage",
+        "BACKEND": "drf_starter.storage_backends.PublicMediaStorage",
         "OPTIONS": {
             "bucket_name": AWS_STORAGE_BUCKET_NAME,
             "endpoint_url": AWS_S3_ENDPOINT_URL,
@@ -38,7 +38,7 @@ STORAGES = {
         },
     },
     "staticfiles": {
-        "BACKEND": "storage_backends.StaticStorage",
+        "BACKEND": "drf_starter.storage_backends.StaticStorage",
         "OPTIONS": {
             "bucket_name": AWS_STORAGE_BUCKET_NAME,
             "endpoint_url": AWS_S3_ENDPOINT_URL,
@@ -52,6 +52,8 @@ STORAGES = {
 # ------------------------
 STATIC_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/static/"
 MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/media/"
+STATIC_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/staticfiles/"
+
 
 # ------------------------
 # CKEditor

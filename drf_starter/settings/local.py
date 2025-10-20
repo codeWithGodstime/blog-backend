@@ -29,6 +29,7 @@ AWS_S3_ENDPOINT_URL = env("S3_ENDPOINT_URL")
 # }
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_IMAGE_BACKEND = "pillow"
