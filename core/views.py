@@ -213,10 +213,9 @@ class UserViewSet(viewsets.ModelViewSet):
     parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
-        # Normal users should not see all users — only themselves
-        if self.request.user.is_superuser:
-            return User.objects.all()
-        return User.objects.filter(id=self.request.user.id)
+        return User.objects.filter(is_superuser=False)
+
+    
 
     @action(detail=False, methods=["get", "put"], permission_classes=[permissions.IsAuthenticated])
     def me(self, request):
