@@ -15,11 +15,17 @@ from drf_spectacular.utils import extend_schema
 
 
 from .models import BlogPost, ArtImage
-from .serializers import BlogPostListSerializer, BlogPostDetailSerializer, AuthenticationSerializer, UserSerializer, ArtImageSerializer
+from .serializers import (
+    BlogPostListSerializer,
+    BlogPostDetailSerializer,
+    AuthenticationSerializer,
+    UserSerializer,
+    ArtImageSerializer,
+)
 
 User = get_user_model()
 
-    
+
 class BlogPostPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = "page_size"
@@ -31,6 +37,7 @@ class IsAdminOrReadOnly(permissions.BasePermission):
     Allow only admins to create/update/delete.
     Everyone can read (GET, HEAD, OPTIONS).
     """
+
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
@@ -122,11 +129,16 @@ class AuthViewSet(viewsets.ViewSet):
                 status=status.HTTP_200_OK,
             )
         except Exception as e:
-            return Response({"detail": "Invalid refresh token", "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "Invalid refresh token", "error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     @action(detail=False, methods=["post"])
     def forget_password(self, request):
-        serializer = AuthenticationSerializer.PasswordForgetSerializer(data=request.data)
+        serializer = AuthenticationSerializer.PasswordForgetSerializer(
+            data=request.data
+        )
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data["email"]
 
@@ -134,7 +146,10 @@ class AuthViewSet(viewsets.ViewSet):
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             # Always return success to avoid account enumeration
-            return Response({"detail": "If an account exists, you'll get an email"}, status=status.HTTP_200_OK)
+            return Response(
+                {"detail": "If an account exists, you'll get an email"},
+                status=status.HTTP_200_OK,
+            )
 
         token = PasswordResetTokenGenerator().make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
@@ -148,30 +163,46 @@ class AuthViewSet(viewsets.ViewSet):
             fail_silently=False,
         )
 
-        return Response({"detail": "If an account exists, you'll get an email"}, status=status.HTTP_200_OK)
+        return Response(
+            {"detail": "If an account exists, you'll get an email"},
+            status=status.HTTP_200_OK,
+        )
 
     @action(detail=False, methods=["post"])
     def password_reset_confirm(self, request):
-        serializer = AuthenticationSerializer.PasswordResetConfirmSerializer(data=request.data)
+        serializer = AuthenticationSerializer.PasswordResetConfirmSerializer(
+            data=request.data
+        )
         serializer.is_valid(raise_exception=True)
 
         try:
             uid = force_str(urlsafe_base64_decode(serializer.validated_data["uid"]))
             user = User.objects.get(pk=uid)
         except (User.DoesNotExist, ValueError, OverflowError):
-            return Response({"detail": "Invalid UID"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "Invalid UID"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         token = serializer.validated_data["token"]
         if not PasswordResetTokenGenerator().check_token(user, token):
-            return Response({"detail": "Invalid or expired token"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "Invalid or expired token"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         user.set_password(serializer.validated_data["new_password"])
         user.save()
-        return Response({"detail": "Password reset successful"}, status=status.HTTP_200_OK)
+        return Response(
+            {"detail": "Password reset successful"}, status=status.HTTP_200_OK
+        )
 
-    @action(detail=False, methods=["post"], permission_classes=[permissions.IsAuthenticated])
+    @action(
+        detail=False, methods=["post"], permission_classes=[permissions.IsAuthenticated]
+    )
     def change_password(self, request):
-        serializer = AuthenticationSerializer.ChangePasswordSerializer(data=request.data, context={"request": request})
+        serializer = AuthenticationSerializer.ChangePasswordSerializer(
+            data=request.data, context={"request": request}
+        )
         serializer.is_valid(raise_exception=True)
 
         user = request.user
@@ -187,7 +218,9 @@ class AuthViewSet(viewsets.ViewSet):
         user.set_password(new_password)
         user.save()
 
-        return Response({"detail": "Password changed successfully"}, status=status.HTTP_200_OK)
+        return Response(
+            {"detail": "Password changed successfully"}, status=status.HTTP_200_OK
+        )
 
 
 @extend_schema(tags=["Blog"])
@@ -195,7 +228,7 @@ class BlogPostViewSet(viewsets.ModelViewSet):
     queryset = BlogPost.objects.all().order_by("-created_at")
     pagination_class = BlogPostPagination
     permission_classes = [IsAdminOrReadOnly]
-    lookup_field = "slug"   # 🔑 use slug instead of ID
+    lookup_field = "slug"  # 🔑 use slug instead of ID
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -204,6 +237,7 @@ class BlogPostViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
 
 @extend_schema(tags=["Users"])
 class UserViewSet(viewsets.ModelViewSet):
@@ -215,9 +249,11 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return User.objects.filter(is_superuser=False)
 
-
-
-    @action(detail=False, methods=["get", "put"], permission_classes=[permissions.IsAuthenticated])
+    @action(
+        detail=False,
+        methods=["get", "put"],
+        permission_classes=[permissions.IsAuthenticated],
+    )
     def me(self, request):
         """Get or update current user's profile"""
         user = request.user
@@ -229,14 +265,15 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
-    
-    @action(detail=True, methods=["get"], permission_classes=[permissions.IsAdminUser])
-    def my_artworks(self, request, pk=None):
+
+    @action(detail=False, methods=["get"], permission_classes=[permissions.IsAdminUser])
+    def my_artworks(self, request, *args, **kwargs):
         """Get all art images uploaded by the user"""
-        user = self.get_object()
+        user = r
         artworks = ArtImage.objects.filter(user=user)
         serializer = ArtImageSerializer(artworks, many=True)
         return Response(serializer.data)
+
 
 @extend_schema(tags=["Art Images"])
 class ArtImageViewSet(viewsets.ModelViewSet):
@@ -244,6 +281,7 @@ class ArtImageViewSet(viewsets.ModelViewSet):
     Handles CRUD operations for user-uploaded art images.
     Each user can only view and modify their own uploads.
     """
+
     serializer_class = ArtImageSerializer
     permission_classes = [permissions.AllowAny]
     parser_classes = [MultiPartParser, FormParser]
