@@ -266,10 +266,10 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.save()
         return Response(serializer.data)
 
-    @action(detail=False, methods=["get"], permission_classes=[permissions.IsAdminUser])
+    @action(detail=False, methods=["get"], permission_classes=[permissions.IsAuthenticated])
     def my_artworks(self, request, *args, **kwargs):
         """Get all art images uploaded by the user"""
-        user = r
+        user = request.user
         artworks = ArtImage.objects.filter(user=user)
         serializer = ArtImageSerializer(artworks, many=True)
         return Response(serializer.data)
