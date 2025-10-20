@@ -12,5 +12,5 @@ router.register("users", UserViewSet, basename="user")
 router.register("art-images", ArtImageViewSet, basename="artimage")
 
 urlpatterns = [
-     path('token/blacklist/', TokenBlacklistView.as_view(), name='token_blacklist'),
+     path('token/blacklist/', TokenBlacklistView.as_view(), name='token_blacklist')
 ] + router.urls

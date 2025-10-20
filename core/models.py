@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from ckeditor_uploader.fields import RichTextUploadingField
 from drf_starter.storage_backends import PublicMediaStorage
 
 from .manager import CustomUserManager
@@ -35,7 +36,7 @@ class BlogPost(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="blog_posts")
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
-    content = models.TextField()
+    content = RichTextUploadingField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

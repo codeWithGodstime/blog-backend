@@ -3,6 +3,11 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from .models import User, ArtImage, BlogPost
 
+
+admin.site.site_header = "ArtFlght CMS"
+admin.site.site_title = "ArtFlght Admin"
+admin.site.index_title = "Welcome to the ArtFlght Admin Dashboard"
+
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     model = User

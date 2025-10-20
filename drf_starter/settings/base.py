@@ -13,6 +13,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env("SECRET_KEY")
 
 INSTALLED_APPS = [
+    "jazzmin",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -23,6 +24,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
+    'ckeditor',
+    'ckeditor_uploader',
     "corsheaders",
     "storages",
     'drf_spectacular',
@@ -128,3 +131,44 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS").split(",")
 AUTH_USER_MODEL = 'core.User'
 
+
+JAZZMIN_SETTINGS = {
+    "site_title": "ArtFlght Admin",
+    "site_header": "ArtFlght CMS",
+    "site_brand": "ArtFlght",
+    "welcome_sign": "Manage your content efficiently",
+    "copyright": "ArtFlght Technologies © 2025",
+    "show_ui_builder": False,  # hides demo theme customizer
+
+    # Logos
+    # "site_logo": "images/logo.png",
+    # "login_logo": None,
+    # "site_logo_classes": "img-circle",
+    # "login_logo_dark": None,
+
+    # Top menu
+    "topmenu_links": [
+        {"name": "Dashboard", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Website", "url": "/", "new_window": True},
+        {"app": "blog"},
+    ],
+
+    # User menu
+    # "usermenu_links": [
+    #     {"name": "Support", "url": "https://artflight.com/support", "new_window": True},
+    # ],
+
+    # Icons for apps and models
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "blog.blogpost": "fas fa-pen-nib",
+    },
+
+    # Sidebar
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "hide_models": [],
+}

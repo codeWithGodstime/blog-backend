@@ -47,6 +47,9 @@ STORAGES = {
 }
 
 STATIC_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/static/"
+CKEDITOR_UPLOAD_PATH = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/uploads/"
+CKEDITOR_IMAGE_BACKEND = "pillow"
+
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
