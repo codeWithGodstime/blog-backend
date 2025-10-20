@@ -19,6 +19,11 @@ DATABASES = {
 }
 # CORS
 CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS").split(",")
+CSRF_TRUSTED_ORIGINS = [
+    "https://artflight.com",
+    "https://api.artflight.com",
+]
+
 
 # Storage
 AWS_ACCESS_KEY_ID = env("S3_ACCESS_KEY_ID")
