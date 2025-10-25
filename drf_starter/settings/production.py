@@ -11,12 +11,19 @@ ALLOWED_HOSTS = env("ALLOWED_HOSTS").split(",")
 
 # Database
 DATABASES = {
-    "default": dj_database_url.parse(
-        env("DATABASE_URL"),
-        conn_max_age=600, 
-        ssl_require=False, #
-    )
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env("DATABASE_NAME"), 
+        "USER": env("DATABASE_USER"), 
+        "PASSWORD": env("DATABASE_PASSWORD"), 
+        "HOST": env("DATABASE_HOST"), 
+        "PORT": "5432",
+        "OPTIONS": {
+            "sslmode": "disable",
+        },
+    }
 }
+
 # CORS
 CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS").split(",")
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS").split(",")
