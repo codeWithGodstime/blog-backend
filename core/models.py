@@ -18,6 +18,10 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     bio = models.TextField(blank=True, null=True)
     avatar = models.ImageField(storage=PublicMediaStorage(), upload_to=upload_to, blank=True, null=True)
+    dob = models.DateField(blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    country = models.CharField(max_length=100, blank=True, null=True)
+    school_attended = models.CharField(max_length=255, blank=True, null=True)
 
 
 class ArtImage(models.Model):
@@ -32,6 +36,14 @@ class ArtImage(models.Model):
         return f"Image {self.id} by {self.user.username}"
     
 
+class BlogCategory(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+
 class BlogPost(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="blog_posts")
     title = models.CharField(max_length=255)
@@ -39,6 +51,7 @@ class BlogPost(models.Model):
     content = RichTextUploadingField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    category = models.ForeignKey(BlogCategory, on_delete=models.SET_NULL, null=True, related_name="blog_posts")
 
     def save(self, *args, **kwargs):
         if not self.slug:

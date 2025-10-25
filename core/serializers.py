@@ -109,6 +109,7 @@ class BlogPostDetailSerializer(serializers.ModelSerializer):
             "content",
             "author",
             "author_name",
+            "category",
             "created_at",
             "updated_at",
         ]
@@ -118,7 +119,7 @@ class BlogPostDetailSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "email", "bio", "avatar"]
+        fields = ["id", "username", "email", "bio", "avatar", "dob", "city", "country", "school_attended"]
         read_only_fields = ["id", "email", "username"]  # email & username fixed after registration
 
 

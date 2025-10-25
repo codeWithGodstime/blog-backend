@@ -1,8 +1,9 @@
 from django.db import transaction
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.utils.encoding import force_bytes, force_str
 from django.conf import settings
+from django.db.models import Q
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from rest_framework import viewsets, permissions, status
@@ -241,13 +242,34 @@ class BlogPostViewSet(viewsets.ModelViewSet):
 
 @extend_schema(tags=["Users"])
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+    queryset = User.objects.filter(is_superuser=False)
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
         return User.objects.filter(is_superuser=False)
+
+    def list(self, request, *args, **kwargs):
+        """List all users except superusers, with optional name search"""
+        queryset = self.get_queryset()
+
+        # --- Search by name ---
+        search = request.query_params.get("q")
+        if search:
+            queryset = queryset.filter(
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search) |
+                Q(username__icontains=search)
+            )
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     @action(
         detail=False,
