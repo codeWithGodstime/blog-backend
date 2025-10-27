@@ -3,13 +3,14 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
      TokenBlacklistView,
  )
-from .views import AuthViewSet, BlogPostViewSet, UserViewSet, ArtImageViewSet
+from .views import AuthViewSet, BlogPostViewSet, UserViewSet, ArtImageViewSet, ArtFolderViewSet
 
 router = DefaultRouter()
 router.register("auth", AuthViewSet, basename="auth")
 router.register("posts", BlogPostViewSet, basename="posts")
 router.register("users", UserViewSet, basename="user")
 router.register("art-images", ArtImageViewSet, basename="artimage")
+router.register("art-folders", ArtFolderViewSet, basename="artfolder")
 
 urlpatterns = [
      path('token/blacklist/', TokenBlacklistView.as_view(), name='token_blacklist')
