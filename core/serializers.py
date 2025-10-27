@@ -3,37 +3,33 @@ from typing import Dict, Any
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer as SimpleJWTTokenObtainPairSerializer
-from .models import BlogPost, ArtImage
-
+from .models import BlogPost, ArtImage, ArtFolder
 
 User = get_user_model()
 logger = logging.getLogger(__file__)
 
 
+# -----------------------------
+# AUTHENTICATION SERIALIZERS
+# -----------------------------
 class AuthenticationSerializer:
     class RegisterSerializer(serializers.ModelSerializer):
-
         class Meta:
             model = User
-            fields = [
-                "username",
-                "email",
-                "password",
-            ]
+            fields = ["username", "email", "password"]
             extra_kwargs = {"password": {"write_only": True}}
 
         def validate_password(self, value):
             from django.contrib.auth.password_validation import validate_password
             validate_password(value)
             return value
-        
+
         def create(self, validated_data):
-            user = User.objects.create_user(
+            return User.objects.create_user(
                 username=validated_data["username"],
                 email=validated_data["email"],
                 password=validated_data["password"],
             )
-            return user
 
     class LoginSerializer(serializers.Serializer):
         email = serializers.EmailField()
@@ -52,7 +48,6 @@ class AuthenticationSerializer:
 
         def validate_new_password(self, value):
             from django.contrib.auth.password_validation import validate_password
-
             validate_password(value)
             return value
 
@@ -62,38 +57,34 @@ class AuthenticationSerializer:
 
         def validate_new_password(self, value):
             from django.contrib.auth.password_validation import validate_password
-
             validate_password(value)
             return value
 
 
+# -----------------------------
+# TOKEN SERIALIZER
+# -----------------------------
 class TokenObtainSerializer(SimpleJWTTokenObtainPairSerializer):
- 
-     def validate(self, attrs: Dict[str, Any]):
- 
-         data = super().validate(attrs)
-         user = self.user
-         user_data = UserSerializer.UserRetrieveSerializer(user).data
-         data['data'] = user_data
-         return data
+    def validate(self, attrs: Dict[str, Any]):
+        data = super().validate(attrs)
+        user = self.user
+        user_data = UserSerializer(user).data
+        data["data"] = user_data
+        return data
 
 
+# -----------------------------
+# BLOG SERIALIZERS
+# -----------------------------
 class BlogPostListSerializer(serializers.ModelSerializer):
     author_name = serializers.CharField(source="author.username", read_only=True)
     excerpt = serializers.SerializerMethodField()
+
     class Meta:
         model = BlogPost
-        fields = [
-            "id",
-            "title",
-            "slug",
-            "author_name",
-            "excerpt",
-            "created_at",
-        ]
+        fields = ["id", "title", "slug", "author_name", "excerpt", "created_at"]
 
     def get_excerpt(self, obj):
-        # Take first 200 characters of content as preview
         return obj.content[:200] + ("..." if len(obj.content) > 200 else "")
 
 
@@ -116,16 +107,38 @@ class BlogPostDetailSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "slug", "author_name", "created_at", "updated_at"]
 
 
+# -----------------------------
+# USER SERIALIZER
+# -----------------------------
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "username", "email", "bio", "avatar", "dob", "city", "country", "school_attended"]
-        read_only_fields = ["id", "email", "username"]  # email & username fixed after registration
+        read_only_fields = ["id", "email", "username"]
+
+
+# -----------------------------
+# ART SERIALIZERS
+# -----------------------------
+class ArtFolderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArtFolder
+        fields = ["id", "name", "description", "created_at", "updated_at"]
+        read_only_fields = ["id", "created_at", "updated_at"]
 
 
 class ArtImageSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source="user.username", read_only=True)
     bio = serializers.CharField(source="user.bio", read_only=True)
+    folder = ArtFolderSerializer(read_only=True)
+    folder_id = serializers.PrimaryKeyRelatedField(
+        queryset=ArtFolder.objects.all(),
+        source="folder",
+        write_only=True,
+        required=False,
+        allow_null=True,
+    )
+    category_display = serializers.CharField(source="get_category_display", read_only=True)
 
     class Meta:
         model = ArtImage
@@ -137,6 +150,10 @@ class ArtImageSerializer(serializers.ModelSerializer):
             "title",
             "image",
             "caption",
+            "folder",
+            "folder_id",
+            "category",
+            "category_display",
             "uploaded_at",
             "updated_at",
         ]
