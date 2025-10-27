@@ -23,6 +23,7 @@ class User(AbstractUser):
     city = models.CharField(max_length=100, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True)
     school_attended = models.CharField(max_length=255, blank=True, null=True)
+    social_links = models.JSONField(blank=True, null=True)
 
     def __str__(self):
         return self.username
