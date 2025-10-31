@@ -69,10 +69,13 @@ CKEDITOR_IMAGE_BACKEND = "pillow"
 CKEDITOR_BASEPATH = f"{STATIC_URL}ckeditor/ckeditor/"
 
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_PASSWORD")
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+# settings.py
+SENDGRID_API_KEY = "your_sendgrid_api_key"
+DEFAULT_FROM_EMAIL = "Your App <no-reply@yourdomain.com>"
+EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"

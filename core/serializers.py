@@ -147,6 +147,9 @@ class ArtImageSerializer(serializers.ModelSerializer):
         model = ArtImage
         fields = [
             "id",
+            "year_created",
+            "medium",
+            "size",
             "user",
             "username",
             "bio",

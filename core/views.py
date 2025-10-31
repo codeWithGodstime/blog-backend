@@ -173,6 +173,20 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         if self.action == "list":
             return BlogPostListSerializer
         return BlogPostDetailSerializer
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_query = self.request.query_params.get("search")
+
+        if search_query:
+            queryset = queryset.filter(
+                Q(title__icontains=search_query)
+                | Q(content__icontains=search_query)
+                | Q(category__name__icontains=search_query)
+                | Q(author__username__icontains=search_query)
+            )
+
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)

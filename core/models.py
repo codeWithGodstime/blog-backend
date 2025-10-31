@@ -71,6 +71,9 @@ class ArtImage(models.Model):
     )
     uploaded_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    size = models.PositiveIntegerField(blank=True, null=True)  # Size in bytes
+    medium = models.CharField(max_length=100, blank=True, null=True)  # e.g., oil, acrylic, digital
+    year_created = models.PositiveIntegerField(blank=True, null=True)  # Year the artwork was created
 
     class Meta:
         ordering = ["-uploaded_at"]

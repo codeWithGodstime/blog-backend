@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "storages",
     'drf_spectacular',
-    # "newsletter"
+    "newsletter",
 
     "core",
 ]
