@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .models import User, ArtImage, BlogPost
+from .models import User, ArtImage, BlogPost, BlogCategory, ArtFolder
 
 
 admin.site.site_header = "ArtFlght CMS"
@@ -43,3 +43,12 @@ class BlogPostAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
     ordering = ("-created_at",)
     list_filter = ("created_at", "updated_at")
+
+
+admin.site.register(BlogCategory)
+@admin.register(ArtFolder)
+class ArtFolderAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "user", "created_at")
+    search_fields = ("name", "user__username")
+
+

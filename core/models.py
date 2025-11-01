@@ -97,12 +97,11 @@ class BlogPost(models.Model):
     content = RichTextUploadingField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    category = models.ForeignKey(BlogCategory, on_delete=models.SET_NULL, null=True, related_name="blog_posts")
+    category = models.ForeignKey(
+        BlogCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name="blog_posts"
+    )
 
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = self.title.lower().replace(" ", "-")
         super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.title
