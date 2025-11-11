@@ -78,14 +78,10 @@ class TokenObtainSerializer(SimpleJWTTokenObtainPairSerializer):
 # -----------------------------
 class BlogPostListSerializer(serializers.ModelSerializer):
     author_name = serializers.CharField(source="author.username", read_only=True)
-    excerpt = serializers.SerializerMethodField()
 
     class Meta:
         model = BlogPost
-        fields = ["id", "title", "slug", "author_name", "excerpt", "created_at"]
-
-    def get_excerpt(self, obj):
-        return obj.content[:200] + ("..." if len(obj.content) > 200 else "")
+        fields = ["id", "title", "slug", 'except' "author_name", "excerpt", "created_at"]
 
 
 class BlogPostDetailSerializer(serializers.ModelSerializer):
@@ -97,6 +93,7 @@ class BlogPostDetailSerializer(serializers.ModelSerializer):
             "id",
             "title",
             "slug",
+            "cover_image",
             "content",
             "author",
             "author_name",

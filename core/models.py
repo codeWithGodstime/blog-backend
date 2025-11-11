@@ -91,9 +91,11 @@ class BlogCategory(models.Model):
 
 
 class BlogPost(models.Model):
+    cover_image = models.ImageField(storage=PublicMediaStorage(), upload_to="blog_cover/", null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="blog_posts")
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
+    excerpt = models.TextField(null=True)
     content = RichTextUploadingField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
