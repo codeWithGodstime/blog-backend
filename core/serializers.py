@@ -77,15 +77,15 @@ class TokenObtainSerializer(SimpleJWTTokenObtainPairSerializer):
 # BLOG SERIALIZERS
 # -----------------------------
 class BlogPostListSerializer(serializers.ModelSerializer):
-    author_name = serializers.CharField(source="author.username", read_only=True)
+    author_name = serializers.CharField(source="author.get_fullname", read_only=True)
 
     class Meta:
         model = BlogPost
-        fields = ["id", "title", "slug", 'except' "author_name", "excerpt", "created_at"]
+        fields = ["id", "cover_image", "title", "slug", "author_name", "excerpt", "created_at"]
 
 
 class BlogPostDetailSerializer(serializers.ModelSerializer):
-    author_name = serializers.CharField(source="author.username", read_only=True)
+    author_name = serializers.CharField(source="author.get_fullname", read_only=True)
 
     class Meta:
         model = BlogPost
